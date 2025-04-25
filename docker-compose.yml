@@ -9,12 +9,12 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: transactions  # Base de datos por defecto
+      POSTGRES_DB: transactions
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Persistencia de datos
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - transaction-network
-    healthcheck:  # Verifica que PostgreSQL esté listo
+    healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
@@ -59,11 +59,11 @@ services:
       KAFKA_NUM_NETWORK_THREADS: 3
       KAFKA_NUM_IO_THREADS: 8
     ports:
-      - "9092:9092"  # Para conexiones externas
-      - "29092:29092"  # Para comunicación interna
-      - "9991:9991"  # JMX (opcional)
+      - "9092:9092" 
+      - "29092:29092"
+      - "9991:9991"
     volumes:
-      - kafka_data:/var/lib/kafka/data  # Persistencia de datos
+      - kafka_data:/var/lib/kafka/data
     networks:
       - transaction-network
     healthcheck:
@@ -72,7 +72,7 @@ services:
       timeout: 20s
       retries: 10
 
-  transaction-service:  # Tu aplicación Node.js
+  transaction-service:
     build: .
     container_name: transaction-app
     depends_on:
@@ -86,20 +86,20 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       DB_NAME: transactions
-      KAFKA_BROKER: "kafka:29092"  # Usa el nombre del servicio
+      KAFKA_BROKER: "kafka:29092" 
     ports:
       - "3000:3000"
     volumes:
-      - .:/usr/src/app  # Monta el código para desarrollo
-      - /usr/src/app/node_modules  # Evita sobrescribir node_modules
+      - .:/usr/src/app 
+      - /usr/src/app/node_modules
     networks:
       - transaction-network
-    restart: unless-stopped  # Reinicia automáticamente si falla
+    restart: unless-stopped
 
 volumes:
-  postgres_data:  # Volumen para PostgreSQL
-  kafka_data:  # Volumen para Kafka
+  postgres_data:
+  kafka_data:
 
 networks:
-  transaction-network:  # Red aislada para los servicios
+  transaction-network:
     driver: bridge
